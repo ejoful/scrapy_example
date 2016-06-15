@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import scrapy
+from maiziedu_spider.items import MaizieduSpiderItem
 
 
 class MaizieduSpider(scrapy.Spider):
@@ -16,7 +17,22 @@ class MaizieduSpider(scrapy.Spider):
             reqs.append(req)
         return reqs
 
-
     def parse(self, response):
+        course_list = response.xpath("//ul[@class='zy_course_list']")
 
-        pass
+        trs = course_list[0].xpath['li']
+
+        items = []
+
+        for course in trs[0:]:
+            pre_item = MaizieduSpiderItem()
+
+            pre_item['course_title'] = course.xpath('a::attr(title)')
+
+            pre_item['course_link'] = course.xpath('a::attr(href)')
+
+            pre_item['course_img'] = course.xpath('a/p/img::attr(src)')
+
+            items.append(pre_item)
+
+        return items

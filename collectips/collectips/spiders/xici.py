@@ -46,6 +46,8 @@ class XiciSpider(scrapy.Spider):
 
             items.append(pre_item)
 
+        print(items)
+
         return items
 
 
