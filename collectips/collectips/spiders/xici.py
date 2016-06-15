@@ -45,7 +45,7 @@ class XiciSpider(scrapy.Spider):
             pre_item['LAST_CHECK_TIME'] = ip.xpath('td[10]/text()')[0].extract()
 
             items.append(pre_item)
-            
+
         return items
 
 
