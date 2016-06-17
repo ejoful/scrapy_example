@@ -16,27 +16,21 @@ class Course(scrapy.Item):
     #
     title = scrapy.Field()
     link = scrapy.Field()
-    img = scrapy.Field()
+    img_url = scrapy.Field()
 
     # 进入页面后
     des = scrapy.Field()
     qq = scrapy.Field()
     teacher_id = scrapy.Field()
 
-
-class Teacher(scrapy.item):
-    name = scrapy.Field()
-    img = scrapy.Field()
-    des = scrapy.Field()
-
-
-class Chapter(scrapy.item):
-    title = scrapy.Field()
-    link = scrapy.Field()
-    time = scrapy.Field()
-
-    # 进入视频界面
-    video_link = scrapy.Field()
+#
+# class Chapter(scrapy.item):
+#     title = scrapy.Field()
+#     link = scrapy.Field()
+#     time = scrapy.Field()
+#
+#     # 进入视频界面
+#     video_link = scrapy.Field()
 
 
 
