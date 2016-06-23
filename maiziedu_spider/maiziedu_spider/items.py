@@ -21,8 +21,12 @@ class Course(scrapy.Item):
     # 进入页面后
     des = scrapy.Field()
     qq = scrapy.Field()
-    teacher_id = scrapy.Field()
+    teacher_name = scrapy.Field()
+    teacher_link = scrapy.Field()
+    teacher_des = scrapy.Field()
 
+
+    course = scrapy.Field()
 #
 # class Chapter(scrapy.item):
 #     title = scrapy.Field()
