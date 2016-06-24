@@ -1,0 +1,58 @@
+diff --git a/maiziedu_spider/maiziedu_spider/items.py b/maiziedu_spider/maiziedu_spider/items.py
+index e709f6f..eb024c1 100644
+--- a/maiziedu_spider/maiziedu_spider/items.py
++++ b/maiziedu_spider/maiziedu_spider/items.py
+@@ -25,8 +25,7 @@ class Course(scrapy.Item):
+     teacher_link = scrapy.Field()
+     teacher_des = scrapy.Field()
+ 
+-
+-    course = scrapy.Field()
++    lessons = scrapy.Field()
+ #
+ # class Chapter(scrapy.item):
+ #     title = scrapy.Field()
+diff --git a/maiziedu_spider/maiziedu_spider/spiders/maiziedu.py b/maiziedu_spider/maiziedu_spider/spiders/maiziedu.py
+index c6df149..e30447f 100644
+--- a/maiziedu_spider/maiziedu_spider/spiders/maiziedu.py
++++ b/maiziedu_spider/maiziedu_spider/spiders/maiziedu.py
+@@ -52,26 +52,28 @@ class MaizieduSpider(scrapy.Spider):
+ 
+         lesson = lesson_lists[0].xpath('li')
+ 
+-        for les in lesson[0:]:
++        course_item['lessons'] = []
++        return self.recursive_parse_video(lesson, course_item)
++
++    def recursive_parse_video(self, tbd, course_item):
++        if not tbd:
++            yield course_item
++        else:
++            les = tbd.pop()
+             title = les.xpath('a/span/text()')[0].extract()
+-
+             link = ["http://www.maiziedu.com" + les.xpath('a/@href')[0].extract()][0]
+-
+-
+-            yield scrapy.Request(url=link, meta={'course_item': course_item,'title':title,'link':link}, callback=self.parse_video,
+-                             dont_filter=True)
+-
++            yield scrapy.Request(url=link, meta={'tbd': tbd, 'title': title, 'link': link, 'course_item': course_item}, callback=self.parse_video,
++                               dont_filter=True)
+ 
+     def parse_video(self, response):
+         course_item = response.meta['course_item']
+         title = response.meta['title']
+         link = response.meta['link']
+-
+         video_link = response.xpath('//source/@src')[0].extract()
++        course_item['lessons'].append({'title':title,'link':link,'video_link':video_link})
++        tbd = response.meta['tbd']
++        return self.recursive_parse_video(tbd, course_item)
+ 
+-        course_item['course'] = {'title':title,'link':link,'video_link':video_link}
+-
+-        yield course_item
+     #     chapter_list = response.xpath("//ul[@class='lesson-lists']")
+     #
+     #     chapters = chapter_list[0].xpath['li']

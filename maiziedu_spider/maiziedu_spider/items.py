@@ -26,7 +26,7 @@ class Course(scrapy.Item):
     teacher_des = scrapy.Field()
 
 
-    course = scrapy.Field()
+    lessons = scrapy.Field()
 #
 # class Chapter(scrapy.item):
 #     title = scrapy.Field()

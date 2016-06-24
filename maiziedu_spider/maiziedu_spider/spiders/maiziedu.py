@@ -52,13 +52,18 @@ class MaizieduSpider(scrapy.Spider):
 
         lesson = lesson_lists[0].xpath('li')
 
-        for les in lesson[0:]:
-            title = les.xpath('a/span/text()')[0].extract()
+        course_item['lessons'] = []
+        return self.recursive_parse_video(lesson, course_item)
 
+    def recursive_parse_video(self, tbd, course_item):
+        if not tbd:
+            yield course_item
+        else:
+            les = tbd.pop()
+            title = les.xpath('a/span/text()')[0].extract()
             link = ["http://www.maiziedu.com" + les.xpath('a/@href')[0].extract()][0]
 
-
-            yield scrapy.Request(url=link, meta={'course_item': course_item,'title':title,'link':link}, callback=self.parse_video,
+            yield scrapy.Request(url=link, meta={'tbd':tbd,'course_item': course_item,'title':title,'link':link}, callback=self.parse_video,
                              dont_filter=True)
 
 
@@ -69,9 +74,11 @@ class MaizieduSpider(scrapy.Spider):
 
         video_link = response.xpath('//source/@src')[0].extract()
 
-        course_item['course'] = {'title':title,'link':link,'video_link':video_link}
+        course_item['lessons'].append({'title':title,'link':link,'video_link':video_link})
+        tbd = response.meta['tbd']
+        return self.recursive_parse_video(tbd, course_item)
 
-        yield course_item
+
     #     chapter_list = response.xpath("//ul[@class='lesson-lists']")
     #
     #     chapters = chapter_list[0].xpath['li']
