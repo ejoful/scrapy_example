@@ -14,7 +14,11 @@ BOT_NAME = 'maiziedu_spider'
 SPIDER_MODULES = ['maiziedu_spider.spiders']
 NEWSPIDER_MODULE = 'maiziedu_spider.spiders'
 
-ITEM_PIPELINES = {'scrapy.pipelines.images.ImagesPipeline': 1}
+
+ITEM_PIPELINES = {
+  'scrapy.pipelines.images.ImagesPipeline': 100,
+  'maiziedu_spider.pipelines.JsonWriterPipeline': 300,
+}
 
 IMAGES_URLS_FIELD = 'img_url'
 IMAGES_STORE = r'.'
