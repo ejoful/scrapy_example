@@ -7,6 +7,11 @@
 
 from scrapy.contrib.exporter import JsonItemExporter
 
+from scrapy import log
+from twisted.enterprise import adbapi
+import MySQLdb.cursors
+
+
 class MaizieduSpiderPipeline(object):
     def process_item(self, item, spider):
         return item
@@ -36,6 +41,56 @@ class JsonWriterPipeline(object):
         self.file.close()
 
 
+class MysqlPipeline(object):
 
+    def __init__(self):
+
+        self.dbpool = adbapi.ConnectionPool(
+            'MySQLdb',
+            db='maiziedu',
+            host='127.0.0.1',
+            user='root',
+            passwd='moon',
+            cursorclass=MySQLdb.cursors.DictCursor,
+            charset='utf8',
+            use_unicode=True)
+
+
+
+    def process_item(self, item, spider):
+        # run db query in thread pool
+        query = self.dbpool.runInteraction(self._conditional_insert, item)
+        query.addErrback(self.handle_error)
+
+        return item
+
+    def _conditional_insert(self, tx, item):
+        # create recode if doesn't exist.
+        # all this block run on it's own thread
+
+        # tx.execute("select * from `tbl_course` where id = %s", (item['id']))
+        # result = tx.fetchone()
+        # if result:
+        #     log.msg("Item already stored in db: %s" % item, level=log.DEBUG)
+        # else:
+            sql = """INSERT INTO `tbl_course` (`id`, `title`, `des`, `img`, `teacher_id`)
+                    VALUES (%s,%s,%s,%s,%s)"""
+            lis = (item['id'],item['title'], item['des'], item['img'],item['teacher_id'])
+            tx.execute(sql,lis)
+
+
+            for le in item['lessons']:
+                lesson = (le['video_id'], item['id'], le['title'], le['link'], le['video_link'])
+                sql = """INSERT INTO `tbl_video` (`id`, `course_id`, `title`, `link`, `video_link`)
+                                             VALUES (%s,%s,%s,%s,%s)"""
+                tx.execute(sql, lesson)
+
+
+
+
+
+    def handle_error(self, e):
+        print ('handle_error')
+        log.err(e)
 
 

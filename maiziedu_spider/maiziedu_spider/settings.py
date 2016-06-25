@@ -16,8 +16,9 @@ NEWSPIDER_MODULE = 'maiziedu_spider.spiders'
 
 
 ITEM_PIPELINES = {
-  'scrapy.pipelines.images.ImagesPipeline': 100,
-  'maiziedu_spider.pipelines.JsonWriterPipeline': 300,
+  # 'scrapy.pipelines.images.ImagesPipeline': 100,
+  # 'maiziedu_spider.pipelines.JsonWriterPipeline': 300,
+  'maiziedu_spider.pipelines.MysqlPipeline': 600,
 }
 
 IMAGES_URLS_FIELD = 'img_url'

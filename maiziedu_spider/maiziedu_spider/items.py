@@ -14,13 +14,16 @@ class Course(scrapy.Item):
 
     # 分页界面
     #
+    id = scrapy.Field()
     title = scrapy.Field()
     link = scrapy.Field()
+    img = scrapy.Field()
     img_url = scrapy.Field()
 
     # 进入页面后
     des = scrapy.Field()
     qq = scrapy.Field()
+    teacher_id = scrapy.Field()
     teacher_name = scrapy.Field()
     teacher_link = scrapy.Field()
     teacher_des = scrapy.Field()
