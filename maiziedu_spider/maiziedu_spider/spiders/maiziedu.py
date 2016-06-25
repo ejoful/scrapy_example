@@ -12,8 +12,8 @@ class MaizieduSpider(scrapy.Spider):
         'http://www.maiziedu.com',
     )
     # 编码设置为utf8,避免中文显示为unicode编码
-    reload(sys)
-    sys.setdefaultencoding('utf-8')
+    # reload(sys)
+    # sys.setdefaultencoding('utf-8')
 
     def start_requests(self):
         reqs = []
