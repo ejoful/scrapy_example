@@ -18,7 +18,7 @@ class MaizieduSpider(scrapy.Spider):
     def start_requests(self):
         reqs = []
         for i in range(1,37):
-            req = scrapy.Request("http://www.maiziedu.com/course/list/all-all/0-%s/"%i)
+            req = scrapy.Request("http://www.maiziedu.com/course/all-all/0-%s/"%i)
             reqs.append(req)
         return reqs
 
