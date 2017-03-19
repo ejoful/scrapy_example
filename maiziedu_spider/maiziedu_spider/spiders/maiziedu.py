@@ -23,7 +23,7 @@ class MaizieduSpider(scrapy.Spider):
         return reqs
 
     def parse(self, response):
-        course_list = response.xpath("//ul[@class='zy_course_list']")
+        course_list = response.xpath("//ul[@class='course_list']")
 
         trs = course_list[0].xpath('li')
 
