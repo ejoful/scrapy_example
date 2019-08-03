@@ -10,6 +10,14 @@ from scrapy.contrib.exporter import JsonItemExporter
 from scrapy import log
 from twisted.enterprise import adbapi
 import MySQLdb.cursors
+from scrapy.pipelines.images import ImagesPipeline
+from scrapy.http import Request
+from scrapy.exceptions import DropItem
+from scrapy.utils.misc import md5sum
+from scrapy.utils.python import to_bytes
+import urlparse
+from os.path import basename
+from urllib import quote, unquote
 
 
 class MaizieduSpiderPipeline(object):
@@ -47,10 +55,10 @@ class MysqlPipeline(object):
 
         self.dbpool = adbapi.ConnectionPool(
             'MySQLdb',
-            db='maiziedu',
+            db='maiziedu_new',
             host='127.0.0.1',
             user='root',
-            passwd='moon',
+            passwd='',
             cursorclass=MySQLdb.cursors.DictCursor,
             charset='utf8',
             use_unicode=True)
@@ -73,16 +81,15 @@ class MysqlPipeline(object):
         # if result:
         #     log.msg("Item already stored in db: %s" % item, level=log.DEBUG)
         # else:
-            sql = """INSERT INTO `tbl_course` (`id`, `title`, `des`, `img`, `teacher_id`)
-                    VALUES (%s,%s,%s,%s,%s)"""
-            lis = (item['id'],item['title'], item['des'], item['img'],item['teacher_id'])
-            tx.execute(sql,lis)
+            sql = """INSERT INTO `tbl_course` (`id`, `title`, `des`, `img`, `teacher_id`,`keywords`)
+                    VALUES (%s,%s,%s,%s,%s,%s)"""
+            lis = (item['id'], item['title'], item['des'], item['img'], item['teacher_id'], item['keywords'])
+            tx.execute(sql, lis)
 
-
-            for le in item['lessons']:
-                lesson = (le['video_id'], item['id'], le['title'], le['link'], le['video_link'])
-                sql = """INSERT INTO `tbl_video` (`id`, `course_id`, `title`, `link`, `video_link`)
-                                             VALUES (%s,%s,%s,%s,%s)"""
+            for index, le in enumerate(item['lessons']):
+                lesson = (le['video_id'], item['id'], le['title'], le['link'], le['video_link'], index+1)
+                sql = """INSERT INTO `tbl_video` (`id`, `course_id`, `title`, `link`, `video_link`, `position`)
+                                             VALUES (%s,%s,%s,%s,%s,%s)"""
                 tx.execute(sql, lesson)
 
 
@@ -94,3 +101,8 @@ class MysqlPipeline(object):
         log.err(e)
 
 
+class MyImagesPipeline(ImagesPipeline):
+    def file_path(self, request, response=None, info=None):
+        image_guid = request.url.split('/')[-1]
+        image_guid = urlparse.unquote(image_guid).decode('utf-8')
+        return '%s' % (image_guid)

@@ -17,13 +17,13 @@ class MaizieduSpider(scrapy.Spider):
 
     def start_requests(self):
         reqs = []
-        for i in range(1,37):
-            req = scrapy.Request("http://www.maiziedu.com/course/all-all/0-%s/"%i)
+        for i in range(1, 47):
+            req = scrapy.Request("http://www.maiziedu.com/course/all-all/0-%s/" % i)
             reqs.append(req)
         return reqs
 
     def parse(self, response):
-        course_list = response.xpath("//ul[@class='course_list']")
+        course_list = response.xpath("//ul[@class='course-lists']")
 
         trs = course_list[0].xpath('li')
 
@@ -51,7 +51,9 @@ class MaizieduSpider(scrapy.Spider):
 
         course_item['des'] = response.xpath('//p[@class="color66 font14 marginB10 p2"]/text()')[0].extract()
 
-        course_item['qq'] = response.xpath('//p[@class="lv_btn"]/a[@class="a2 color66 VLCico"]/text()')[0].extract()
+        course_item['keywords'] = response.xpath("//meta[@name='keywords']/@content")[0].extract()
+
+        course_item['qq'] = response.xpath('//div[@class="lv_btn"]/a[@class="a2 color66 VLCico"]/text()')[0].extract()
 
         course_item['teacher_name'] = response.xpath('//div[@class="teacher-info marginB20"]/div/h3/text()')[0].extract()
 
@@ -73,7 +75,7 @@ class MaizieduSpider(scrapy.Spider):
         if not tbd:
             yield course_item
         else:
-            les = tbd.pop()
+            les = tbd.pop(0)
             title = les.xpath('a/span/text()')[0].extract()
             link = ["http://www.maiziedu.com" + les.xpath('a/@href')[0].extract()][0]
 

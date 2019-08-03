@@ -16,6 +16,7 @@ class Course(scrapy.Item):
     #
     id = scrapy.Field()
     title = scrapy.Field()
+    keywords = scrapy.Field()
     link = scrapy.Field()
     img = scrapy.Field()
     img_url = scrapy.Field()
